@@ -22,40 +22,40 @@ app.use(function( req, res, next ) {
         case 'api.dearestjustin.org': 
           express.static( './apps/dearestjustin.org/server/' )( req, res, next ); break;
         case 'nokxl.org': 
-          express.static('./apps/nokxl.org/build')( req, res, next); break;
+          express.static( './apps/nokxl.org/build' )( req, res, next ); break;
         case 'overthrow.io': 
-          express.static('./apps/overthrow.io/web/build')(req, res, next); break;
+          express.static( './apps/overthrow.io/web/build' )( req, res, next ); break;
         case 'xtrarad.com': 
-          express.static( './apps/xtrarad.com/web/build')(req, res, next); break;
+          express.static( './apps/xtrarad.com/web/build' )( req, res, next ); break;
         case 'wallofftrump.us':
-          express.static( './sites/wallofftrump.us')(req, res, next); break;
+          express.static( './sites/wallofftrump.us' )( req, res, next ); break;
         case 'ndncollective.org':
-          express.static( './sites/ndncollective.org/ndncollective.org/build'); break;
+          express.static( './sites/ndncollective.org/ndncollective.org/build' ); break;
         case 'media.other98.com':
-          express.static( './sites/media.other98.com')(req, res, next); break;
+          express.static( './sites/media.other98.com' )(req, res, next); break;
         case 'lieboldly.com':
-          express.static( './sites/media.other98.com')(req, res, next); break;
+          express.static( './sites/media.other98.com' )(req, res, next); break;
         case 'kochblocked.com':
-          express.static( './sites/ndncollective.org')(req, res, next); break;
+          express.static( './sites/ndncollective.org' )(req, res, next); break;
         case 'occupydc.rip':
           express.static( './static/occupydc.rip' )(req, res, next); break;
         case 'goboldly.com':
-          express.static('./sites/goboldly.com')(req, res, next); break;
+          express.static( './sites/goboldly.com' )(req, res, next); break;
         case 'dakotaaccesspipeline.net':
-          express.static('./sites/dakotaaccesspipeline.net')(req, res, next); break;
+          express.static( './sites/dakotaaccesspipeline.net' )(req, res, next); break;
         case 'whatthefrackjerrybrown.com':
-          express.static('./static/whatthefrackjerrybrown.com')(req, res, next); break;
+          express.static( './static/whatthefrackjerrybrown.com' )(req, res, next); break;
         case 'adolf.tinypixel.io':
-          express.static('./sites/adolf')(req, res, next); break;
+          express.static( './sites/adolf' )(req, res, next); break;
         default: 
-          res.redirect('https://tinypixel.io/404')
+          res.redirect( 'https://tinypixel.io/404' )
     }
 });
 
 httpServer.listen(80, () => {
-  console.log('HTTP Server running on port 80')
+  console.log( 'HTTP Server running on port 80' )
 })
 
 httpsServer.listen(443, () => {
-  console.log('HTTPS Server running on port 443')
+  console.log( 'HTTPS Server running on port 443' )
 })
