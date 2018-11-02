@@ -1,0 +1,28 @@
+{
+  "name": "express_server",
+  "version": "1.0.0",
+  "description": "Node.js on Docker",
+  "author": "Kelly Mears <developers@tinypixel.io>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixelcollective/express_server.git"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "flat",
+    "client"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixelcollective/express_server/issues"
+  },
+  "homepage": "https://github.com/pixelcollective/express_server#readme"
+}
