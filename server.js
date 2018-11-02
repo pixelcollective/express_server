@@ -1,5 +1,5 @@
 const express = require('express')
-const http = require ('http');
+const http = require ('http')
 const https = require ('https')
 
 const app = express()
@@ -8,7 +8,10 @@ const credentials = {
 	key: privateKey,
 	cert: certificate,
 	ca: ca
-};
+}
+
+const httpServer = http.createServer(app)
+const httpsServer = https.createServer(credentials, app)
 
 app.use(function( req, res, next ) {
     switch( req.host ) {
@@ -34,24 +37,25 @@ app.use(function( req, res, next ) {
           express.static( './sites/media.other98.com')(req, res, next); break;
         case 'kochblocked.com':
           express.static( './sites/ndncollective.org')(req, res, next); break;
+        case 'occupydc.rip':
+          express.static( './static/occupydc.rip' )(req, res, next); break;
         case 'goboldly.com':
           express.static('./sites/goboldly.com')(req, res, next); break;
         case 'dakotaaccesspipeline.net':
           express.static('./sites/dakotaaccesspipeline.net')(req, res, next); break;
+        case 'whatthefrackjerrybrown.com':
+          express.static('./static/whatthefrackjerrybrown.com')(req, res, next); break;
         case 'adolf.tinypixel.io':
           express.static('./sites/adolf')(req, res, next); break;
         default: 
-          res.redirect('https://tinypixel.io/404');
+          res.redirect('https://tinypixel.io/404')
     }
 });
 
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
-
 httpServer.listen(80, () => {
-  console.log('HTTP Server running on port 80');
+  console.log('HTTP Server running on port 80')
 })
 
-httpServer.listen(443, () => {
-  console.log('HTTPS Server running on port 443');
-});
+httpsServer.listen(443, () => {
+  console.log('HTTPS Server running on port 443')
+})
