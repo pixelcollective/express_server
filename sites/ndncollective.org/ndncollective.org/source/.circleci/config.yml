@@ -1,0 +1,83 @@
+version: 2
+jobs:
+  build_and_deploy_staging:
+    docker:
+      - image: 988692067152.dkr.ecr.us-west-2.amazonaws.com/ci_matchfirebuildimage:latest
+        aws_auth:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: "Log In to AWS ECR"
+          command: "(set +o pipefail && yes | eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email))"
+      - run:
+          name: "Create Repository if it does not exist"
+          command: |
+            aws ecr create-repository --repository-name $CIRCLE_PROJECT_REPONAME || echo "ECR repository $CIRCLE_PROJECT_REPONAME already exists."
+      - run:
+          name: "Build and Push Image"
+          command: |
+            docker build -t $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+            docker push $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
+            docker tag $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:latest
+            docker push $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:latest
+      - run:
+          name: Deploy Helm Chart
+          command: |
+            helm init --client-only
+            PROJECT_EXISTS=$(helm list | awk '{print $1}' | grep -w staging-$CIRCLE_PROJECT_REPONAME || :)
+            if [ -z $PROJECT_EXISTS ]; then helm install ~/charts/nginx-0.4.0.tgz --name staging-$CIRCLE_PROJECT_REPONAME --namespace staging-$CIRCLE_PROJECT_REPONAME --set imagePullPolicy=Always,image=$AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1,domain=$KUBE_SITE_URL_STAGING,resources.requests.memory=50Mi,resources.requests.cpu=50m,resources.limits.memory=256Mi,resources.limits.cpu=300m; else helm upgrade staging-$CIRCLE_PROJECT_REPONAME ~/charts/nginx-0.4.0.tgz --wait --namespace staging-$CIRCLE_PROJECT_REPONAME --set imagePullPolicy=Always,image=$AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1,domain=$KUBE_SITE_URL_STAGING,resources.requests.memory=50Mi,resources.requests.cpu=50m,resources.limits.memory=256Mi,resources.limits.cpu=300m; fi
+
+
+  build_and_deploy_production:
+    docker:
+      - image: 988692067152.dkr.ecr.us-west-2.amazonaws.com/ci_matchfirebuildimage:latest
+        aws_auth:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: "Log In to AWS ECR"
+          command: "(set +o pipefail && yes | eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email))"
+      - run:
+          name: "Create Repository if it does not exist"
+          command: |
+            aws ecr create-repository --repository-name $CIRCLE_PROJECT_REPONAME || echo "ECR repository $CIRCLE_PROJECT_REPONAME already exists."
+      - run:
+          name: "Build and Push Image"
+          command: |
+            docker build -t $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+            docker push $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
+            docker tag $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:latest
+            docker push $AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:latest
+      - run:
+          name: Deploy Helm Chart
+          command: |
+            helm init --client-only
+            PROJECT_EXISTS=$(helm list | awk '{print $1}' | grep -w production-$CIRCLE_PROJECT_REPONAME || :)
+            if [ -z $PROJECT_EXISTS ]; then helm install ~/charts/nginx-0.4.0.tgz --name production-$CIRCLE_PROJECT_REPONAME --namespace production-$CIRCLE_PROJECT_REPONAME --set imagePullPolicy=Always,image=$AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1,domain=$KUBE_SITE_URL_PRODUCTION,resources.requests.memory=100Mi,resources.requests.cpu=100m,resources.limits.memory=1024Mi,resources.limits.cpu=1; else helm upgrade production-$CIRCLE_PROJECT_REPONAME ~/charts/nginx-0.4.0.tgz --wait --namespace production-$CIRCLE_PROJECT_REPONAME --set imagePullPolicy=Always,image=$AWS_ECR_REGISTRY_URL/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1,domain=$KUBE_SITE_URL_PRODUCTION,resources.requests.memory=100Mi,resources.requests.cpu=100m,resources.limits.memory=1024Mi,resources.limits.cpu=1; fi
+
+workflows:
+  version: 2
+  staging:
+    jobs:
+      - build_and_deploy_staging:
+          context: org-global
+          filters:
+            branches:
+              only:
+                - development
+  production:
+    jobs:
+      - build_and_deploy_production:
+          context: org-global
+          filters:
+            branches:
+              only:
+                - master

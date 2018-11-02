@@ -1,0 +1,36 @@
+// Base mixin to be inherited by font mixins
+@mixin fontstyles($fontSize: '', $lineHeight: '', $weight: '', $style: '') {
+  @if($fontSize != '') {
+    @include rem(font-size, $fontSize);
+  }
+  @if($lineHeight != '') {
+    line-height: ($lineHeight / $fontSize);
+  }
+  @if($weight != '') {
+    font-weight: $weight;
+  }
+  @if($style != '') {
+    font-style: $style;
+  }
+}
+
+// Generate font w/ additional styles
+@mixin font($family, $fontSize: '', $lineHeight: '', $weight: '', $style: '') {
+  @if ( $family ) {
+    font-family: $family;
+  }
+  @include fontstyles($fontSize, $lineHeight, $weight, $style);
+}
+
+// Default Font
+@mixin font__primary() {
+  @include font($font__arial, 18px, 30px, 400);
+}
+
+@mixin font__light() {
+  @include font($font__arial, 18px, 30px, 300);
+}
+
+@mixin font__medium() {
+  @include font($font__arial, 18px, 30px, 500);
+}

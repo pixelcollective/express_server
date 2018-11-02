@@ -1,0 +1,238 @@
+// http://hugogiraudel.com/2013/03/18/ultimate-rem-mixin/
+@function parseInt($n) { /* 2 */
+  @return $n / ($n * 0 + 1);
+}
+
+// Convert property from px to rem units
+@mixin rem($property, $values) {
+  $px : (); /* 3 */
+  $rem: (); /* 3 */
+
+  @each $value in $values { /* 4 */
+
+    @if $value == 0 or $value == auto { /* 5 */
+      $px : append($px , $value);
+      $rem: append($rem, $value);
+    }
+
+    @else {
+      $unit: unit($value);    /* 6 */
+      $val: parseInt($value); /* 6 */
+
+      @if $unit == "px" {  /* 7 */
+        $px : append($px,  $value);
+        $rem: append($rem, ($val / 16 + rem));
+      }
+
+      @if $unit == "rem" { /* 7 */
+        $px : append($px,  ($val * 16 + px));
+        $rem: append($rem, $value);
+      }
+    }
+  }
+
+  @if $px == $rem {     /* 8 */
+    #{$property}: $px;  /* 9 */
+  } @else {
+    #{$property}: $px;  /* 9 */
+    #{$property}: $rem; /* 9 */
+  }
+}
+
+// Input placeholder mixin
+@mixin inputPlaceholder() {
+  $selector: '';
+  $prefixes: (
+          moz: "::-moz",
+          webkit: "::-webkit",
+          ie: ":-ms"
+  );
+  @each $prop, $value in $prefixes {
+    @if $prop != "moz" {
+      $selector: #{$value}-input-placeholder;
+    } @else {
+      $selector: #{$value}-placeholder;
+    }
+    @if & {
+      &#{$selector} {
+        @content;
+      }
+    } @else {
+      #{$selector} {
+        @content;
+      }
+    }
+  }
+  &::placeholder {
+    @content;
+  }
+}
+
+// Chris' Media Query Mixin
+@mixin c_breakpoint($point) {
+  @if $point == cowabunga {
+    @media (max-width: 1520px) { @content; }
+  }
+  @else if $point == cowabunga_inv {
+    @media (min-width: 1521px) { @content; }
+  }
+  @else if $point == waimea {
+    @media (max-width: 1280px) { @content; }
+  }
+  @else if $point == waimea_inv {
+    @media (min-width: 1281px) { @content; }
+  }
+  @else if $point == mavericks {
+    @media (max-width: 1200px) { @content; }
+  }
+  @else if $point == mavericks_inv {
+    @media (min-width: 1201px) { @content; }
+  }
+  @else if $point == teahupoo {
+    @media (max-width: 1100px) { @content; }
+  }
+  @else if $point == teahupoo_inv {
+    @media (min-width: 1101px) { @content; }
+  }
+  @else if $point == shipsterns {
+    @media (max-width: 1024px) { @content; }
+  }
+  @else if $point == shipsterns_inv {
+    @media (min-width: 1025px) { @content; }
+  }
+  @else if $point == jaws {
+    @media (max-width: 920px)  { @content; }
+  }
+  @else if $point == jaws_inv {
+    @media (min-width: 921px) { @content; }
+  }
+  @else if $point == pipeline {
+    @media (max-width: 768px) { @content; }
+  }
+  @else if $point == pipeline_inv {
+    @media (min-width: 769px) { @content; }
+  }
+  @else if $point == ours {
+    @media (max-width: 640px) { @content; }
+  }
+  @else if $point == ours_inv {
+    @media (min-width: 641px) { @content; }
+  }
+  @else if $point == guad {
+    @media (max-width: 560px) { @content; }
+  }
+  @else if $point == guad_inv {
+    @media (min-width: 561px) { @content; }
+  }
+  @else if $point == pismo {
+    @media (max-width: 480px)  { @content; }
+  }
+  @else if $point == pismo_inv {
+    @media (min-width: 481px) { @content; }
+  }
+  @else if $point == nazare {
+    @media (max-height: 320px)  { @content; }
+  }
+  @else if $point == nazare_inv {
+    @media (min-width: 321px) { @content; }
+  }
+}
+
+
+// ------------------------------------------------------------
+// Omega Reset - Bourbon Neat
+// ------------------------------------------------------------
+
+@mixin omega-reset($nth) {
+  &:nth-child(#{$nth}) { margin-right: flex-gutter($grid-columns, $gutter); }
+  &:nth-child(#{$nth}+1) { clear: none }
+}
+
+$easeInSine: cubic-bezier(0.47, 0, 0.745, 0.715);
+$easeOutSine: cubic-bezier(0.39, 0.575, 0.565, 1);
+$easeInOutSine: cubic-bezier(0.39, 0.575, 0.565, 1);
+
+$easeInQuad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+$easeOutQuad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$easeInOutQuad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+$easeInCubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+$easeOutCubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+$easeInOutCubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+
+$easeInQuart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+$easeOutQuart: cubic-bezier(0.165, 0.84, 0.44, 1);
+$easeInOutQuart: cubic-bezier(0.165, 0.84, 0.44, 1);
+
+$easeInQuint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+$easeOutQuint: cubic-bezier(0.23, 1, 0.32, 1);
+$easeInOutQuint: cubic-bezier(0.23, 1, 0.32, 1);
+
+$easeInExpo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+$easeOutExpo: cubic-bezier(0.19, 1, 0.22, 1);
+$easeInOutExpo: cubic-bezier(0.19, 1, 0.22, 1);
+
+$easeInCirc: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+$easeOutCirc: cubic-bezier(0.075, 0.82, 0.165, 1);
+$easeInOutCirc: cubic-bezier(0.075, 0.82, 0.165, 1);
+
+$easeInBack: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+$easeOutBack: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+$easeInOutBack: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+$easeInOutFast: cubic-bezier(1,0,0,1);
+
+$authenticMotion: cubic-bezier(.4,0,.2,1);
+
+// Usage:   @include transitions(width, height 0.3s ease-in-out);
+// Output:  transition: width 0.2s, height 0.3s ease-in-out;
+//
+// Pass in any number of transitions
+@mixin transitions($transitions...) {
+  $unfoldedTransitions: ();
+  @each $transition in $transitions {
+    $unfoldedTransitions: append($unfoldedTransitions, unfoldTransition($transition), comma);
+  }
+  transition: $unfoldedTransitions;
+}
+
+@function unfoldTransition ($transition) {
+  // Default values
+  $property: all;
+  $duration: 260ms;
+  $easing: $easeOutQuad; // Browser default is ease, which is what we want
+  $delay: null; // Browser default is 0, which is what we want
+  $defaultProperties: ($property, $duration, $easing, $delay);
+
+  // Grab transition properties if they exist
+  $unfoldedTransition: ();
+  @for $i from 1 through length($defaultProperties) {
+    $p: null;
+    @if $i <= length($transition) {
+      $p: nth($transition, $i)
+    } @else {
+      $p: nth($defaultProperties, $i)
+    }
+    $unfoldedTransition: append($unfoldedTransition, $p);
+  }
+
+  @return $unfoldedTransition;
+}
+
+@mixin bg-cover {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+// Fill container
+@mixin bg-fill {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
