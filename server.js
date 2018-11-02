@@ -4,6 +4,12 @@ const https = require ('https')
 
 const app = express()
 
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
 app.use(function( req, res, next ) {
     switch( req.host ) {
         case 'agit-pop.com': express.static( './agit-pop.com/dist' )( req, res, next ); break;
